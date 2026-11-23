@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="./logo.jpg">
+  <link rel="apple-touch-icon" href="./icon-192.png">
   <meta name="theme-color" content="#047857">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,7 +40,7 @@
       overflow: hidden;
     }
 
-    /* Blocking Startup Disclaimer Modal */
+    /* Blocking Startup Disclaimer & Install Help Modals */
     .disclaimer-backdrop {
       position: fixed;
       inset: 0;
@@ -97,6 +97,14 @@
       padding: 12px 14px;
       border-radius: 10px;
       border: 1px solid #e2e8f0;
+    }
+
+    .disclaimer-text p {
+      margin: 0 0 8px 0;
+    }
+
+    .disclaimer-text p:last-child {
+      margin-bottom: 0;
     }
 
     .disclaimer-close-btn {
@@ -185,20 +193,22 @@
       font-weight: 400;
     }
 
+    /* Solid Always-Visible Install Button on Dashboard */
     .install-app-btn {
-      display: none;
-      margin: 10px auto 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin: 12px auto 0 auto;
       background: #ffffff;
       color: #047857;
-      border: none;
+      border: 2px solid #a7f3d0;
       border-radius: 999px;
-      padding: 7px 16px;
-      font-size: 0.8rem;
+      padding: 8px 18px;
+      font-size: 0.84rem;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
-      align-items: center;
-      gap: 6px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
       transition: transform 0.15s ease, background 0.2s ease;
     }
 
@@ -207,8 +217,8 @@
       transform: translateY(-1px);
     }
 
-    .install-app-btn.visible {
-      display: inline-flex;
+    .install-app-btn.hidden-standalone {
+      display: none;
     }
 
     #loading {
@@ -548,6 +558,22 @@
     </div>
   </div>
 
+  <!-- Manual Install Instructions Modal (Fallback when native prompt isn't triggered) -->
+  <div id="install-help-modal" class="disclaimer-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="install-help-heading">
+    <div class="disclaimer-modal">
+      <img src="./logo.jpg" alt="S.K Duza Enterprise Logo" class="modal-logo">
+      <h2 id="install-help-heading" class="disclaimer-title">Install SK Duza App</h2>
+      <div class="disclaimer-text">
+        <p><strong>Android (Chrome):</strong> Tap the <strong>three dots (⋮)</strong> at the top-right corner, then tap <strong>Add to Home screen</strong> &gt; <strong>Install</strong>.</p>
+        <p><strong>iPhone / iPad (Safari):</strong> Tap the <strong>Share</strong> icon at the bottom of Safari, then select <strong>Add to Home Screen</strong>.</p>
+        <p><strong>Computer (Chrome / Edge):</strong> Click the <strong>Install icon</strong> in the right side of the address bar.</p>
+      </div>
+      <button type="button" class="disclaimer-close-btn" onclick="closeInstallHelpModal()">
+        Got It
+      </button>
+    </div>
+  </div>
+
   <header>
     <div class="header-logo-box">
       <img src="./logo.jpg" alt="S.K Duza Enterprise Logo" class="header-logo">
@@ -560,9 +586,11 @@
     </div>
     <h1>SK DUZA ENTERPRISES</h1>
     <div class="sub-title">Feed Catalog & Live Order Calculator</div>
-    <button type="button" id="install-app-btn" class="install-app-btn" onclick="triggerInstallPrompt()">
-      📲 Install App
-    </button>
+    <div>
+      <button type="button" id="install-app-btn" class="install-app-btn" onclick="triggerInstallPrompt()">
+        📲 Install App
+      </button>
+    </div>
   </header>
 
   <div id="loading">Syncing Latest Feed Prices...</div>
@@ -633,30 +661,37 @@
     let rowCounter = 0;
     let deferredInstallPrompt = null;
 
+    // Hide install button if already running inside the installed standalone app
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+      document.getElementById('install-app-btn').classList.add('hidden-standalone');
+    }
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredInstallPrompt = e;
-      const installBtn = document.getElementById('install-app-btn');
-      if (installBtn) {
-        installBtn.classList.add('visible');
-      }
     });
 
     async function triggerInstallPrompt() {
-      if (!deferredInstallPrompt) return;
-      deferredInstallPrompt.prompt();
-      const { outcome } = await deferredInstallPrompt.userChoice;
-      if (outcome === 'accepted') {
-        document.getElementById('install-app-btn').classList.remove('visible');
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        if (outcome === 'accepted') {
+          document.getElementById('install-app-btn').classList.add('hidden-standalone');
+        }
+        deferredInstallPrompt = null;
+      } else {
+        document.getElementById('install-help-modal').classList.remove('hidden');
+        document.body.classList.add('modal-open');
       }
-      deferredInstallPrompt = null;
+    }
+
+    function closeInstallHelpModal() {
+      document.getElementById('install-help-modal').classList.add('hidden');
+      document.body.classList.remove('modal-open');
     }
 
     window.addEventListener('appinstalled', () => {
-      const installBtn = document.getElementById('install-app-btn');
-      if (installBtn) {
-        installBtn.classList.remove('visible');
-      }
+      document.getElementById('install-app-btn').classList.add('hidden-standalone');
       deferredInstallPrompt = null;
     });
 
