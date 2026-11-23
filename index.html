@@ -810,14 +810,8 @@
     }
 
     async function copyOrderSummary() {
-      if (!isLocationSelected) {
-        alert("Please select a delivery location first.");
-        return;
-      }
-
       const rows = document.querySelectorAll(".order-item-card");
-      let selectedLines = [];
-      let totalBags = 0;
+      let lines = [];
       let feedOnlyTotal = 0;
       let locationOnlyTotal = 0;
       let grandTotal = 0;
@@ -831,41 +825,33 @@
         if (selectEl.value !== "" && quantity > 0) {
           const product = productsList.find(p => String(p.id) === String(selectEl.value));
           if (product) {
-            const finalBagPrice = product.basePrice + currentLocationFee;
             const rowFeedCost = product.basePrice * quantity;
             const rowLocCost = currentLocationFee * quantity;
             const itemSubtotal = rowFeedCost + rowLocCost;
 
-            totalBags += quantity;
             feedOnlyTotal += rowFeedCost;
             locationOnlyTotal += rowLocCost;
             grandTotal += itemSubtotal;
 
-            selectedLines.push(
-              `${selectedLines.length + 1}. ${product.name}\n` +
-              `   Qty: ${quantity} bag(s) | Base: ₦${product.basePrice.toLocaleString()}/bag | With Location: ₦${finalBagPrice.toLocaleString()}/bag\n` +
-              `   Subtotal: ₦${itemSubtotal.toLocaleString()}`
+            lines.push(
+              `${product.name}: qty: ${quantity}\n` +
+              `price: ${itemSubtotal.toLocaleString()}`
             );
           }
         }
       });
 
-      if (selectedLines.length === 0) {
-        alert("Please select at least one feed product and enter a quantity greater than 0.");
+      if (lines.length === 0) {
+        alert("Please select at least one product and enter a quantity greater than 0.");
         return;
       }
 
-      const summaryText =
-        `*SK DUZA ENTERPRISES - ORDER SUMMARY*\n` +
-        `Delivery Location: ${currentLocationName} (+₦${currentLocationFee.toLocaleString()}/bag)\n` +
-        `----------------------------------------\n` +
-        `${selectedLines.join("\n\n")}\n` +
-        `----------------------------------------\n` +
-        `Total Quantity: ${totalBags.toLocaleString()} bag(s)\n` +
-        `1. Location Total (${totalBags} × ₦${currentLocationFee.toLocaleString()}): ₦${locationOnlyTotal.toLocaleString()}\n` +
-        `2. Feed Total (Base Price Only): ₦${feedOnlyTotal.toLocaleString()}\n` +
-        `3. GRAND TOTAL: ₦${grandTotal.toLocaleString()}`;
+      const totalsSection =
+        `location total: N${locationOnlyTotal.toLocaleString()}\n` +
+        `feed total: N${feedOnlyTotal.toLocaleString()}\n` +
+        `grand total: N${grandTotal.toLocaleString()}`;
 
+      const summaryText = `${lines.join("\n\n")}\n\n${totalsSection}`;
       const copyBtn = document.getElementById("copy-order-btn");
 
       try {
