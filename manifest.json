@@ -1,0 +1,19 @@
+{
+  "name": "SK Duza Enterprises Catalog",
+  "short_name": "SK Duza",
+  "description": "Live Feed Price Catalog & Order Calculator",
+  "start_url": "/sk-duza-catalog/",
+  "scope": "/sk-duza-catalog/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#047857",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3081/3081986.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
