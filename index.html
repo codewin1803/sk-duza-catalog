@@ -572,7 +572,7 @@
   <div class="grand-total-bar">
     <div class="totals-breakdown-grid">
       <div class="summary-line">
-        <span>1. Location Total (<span id="total-bags-label">0</span> bags × ₦<span id="unit-loc-fee-label">0</span>):</span>
+        <span>1. Freight Cost (<span id="total-bags-label">0</span> bags × ₦<span id="unit-loc-fee-label">0</span>):</span>
         <span id="location-only-total">₦0</span>
       </div>
       <div class="summary-line">
@@ -856,7 +856,7 @@
         `Location: ${currentLocationName} (+N${currentLocationFee.toLocaleString()}/bag)\n\n` +
         `${lines.join("\n")}\n\n` +
         `Total Bags: ${totalBags.toLocaleString()}\n` +
-        `Location Fee: N${locationOnlyTotal.toLocaleString()}\n` +
+        `Freight Cost: N${locationOnlyTotal.toLocaleString()}\n` +
         `Feed Total: N${feedOnlyTotal.toLocaleString()}\n` +
         `*GRAND TOTAL: N${grandTotal.toLocaleString()}*`;
 
