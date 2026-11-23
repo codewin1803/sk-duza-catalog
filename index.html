@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#047857">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081986.png">
+  <meta name="theme-color" content="#047857">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SK Duza Price Catalog & Calculator</title>
@@ -93,7 +94,7 @@
 
     .main-container {
       max-width: 720px;
-      margin: 0 auto 110px auto;
+      margin: 0 auto 215px auto;
       display: none;
     }
 
@@ -294,30 +295,59 @@
       box-shadow: none;
     }
 
-    /* Floating Bottom Dock for Grand Total */
+    /* Floating Bottom Summary Dock with 3 Totals & Copy Action */
     .grand-total-bar {
       position: fixed;
-      bottom: 12px;
+      bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
-      width: calc(100% - 24px);
+      width: calc(100% - 20px);
       max-width: 720px;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #ffffff;
-      padding: 12px 18px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      z-index: 1000;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .totals-breakdown-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 8px;
+    }
+
+    .summary-line {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-      z-index: 1000;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .summary-line span:last-child {
+      color: #f8fafc;
+      font-weight: 700;
+    }
+
+    .grand-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
     }
 
     .grand-total-label {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       color: #94a3b8;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -337,17 +367,41 @@
       font-weight: 800;
     }
 
-    @media (max-width: 340px) {
+    .copy-order-btn {
+      background: var(--primary-light);
+      color: #064e3b;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .copy-order-btn:hover {
+      background: #34d399;
+    }
+
+    .copy-order-btn.copied {
+      background: #ffffff;
+      color: #047857;
+    }
+
+    @media (max-width: 380px) {
       body { padding: 6px; }
       header { padding: 12px 8px; border-radius: 12px; }
       h1 { font-size: 1.1rem; }
       .grand-total-bar {
         bottom: 6px;
-        padding: 8px 12px;
-        border-radius: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
         width: calc(100% - 12px);
       }
-      .grand-total-amount { font-size: 1rem; }
+      .summary-line { font-size: 0.74rem; }
+      .grand-total-amount { font-size: 1.05rem; }
+      .copy-order-btn { padding: 8px 10px; font-size: 0.76rem; }
     }
   </style>
 </head>
@@ -393,19 +447,38 @@
     </button>
   </div>
 
-  <!-- Floating Grand Total Summary Bar -->
+  <!-- Floating Summary Bar with 3 Totals & Copy Button -->
   <div class="grand-total-bar">
-    <div>
-      <span class="grand-total-label">Grand Total</span>
-      <span class="grand-total-sub" id="summary-location-text">No location selected</span>
+    <div class="totals-breakdown-grid">
+      <div class="summary-line">
+        <span>1. Location Total (<span id="total-bags-label">0</span> bags × ₦<span id="unit-loc-fee-label">0</span>):</span>
+        <span id="location-only-total">₦0</span>
+      </div>
+      <div class="summary-line">
+        <span>2. Feed Total (Base Price Only):</span>
+        <span id="feed-only-total">₦0</span>
+      </div>
     </div>
-    <span class="grand-total-amount" id="grand-total">₦0</span>
+
+    <div class="grand-total-row">
+      <div>
+        <span class="grand-total-label">3. Grand Total</span>
+        <span class="grand-total-sub" id="summary-location-text">No location selected</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="grand-total-amount" id="grand-total">₦0</span>
+        <button type="button" id="copy-order-btn" class="copy-order-btn" onclick="copyOrderSummary()">
+          Copy Order
+        </button>
+      </div>
+    </div>
   </div>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzx0OreTpR7nowiE15Kc1ilv5E7C4GdOaxti2mEgCx_ptCV1W5k-lBjV7e4sJ-DimwY/exec";
     let productsList = [];
     let currentLocationFee = 0;
+    let currentLocationName = "";
     let isLocationSelected = false;
     let rowCounter = 0;
 
@@ -432,7 +505,6 @@
         document.getElementById("loading").style.display = "none";
         document.getElementById("main-app").style.display = "block";
 
-        // Create the first product row (locked until location is selected)
         addProductRow();
       } catch (error) {
         document.getElementById("loading").innerText = "Unable to fetch live prices. Please check connection.";
@@ -451,6 +523,7 @@
       if (!locationSelect.value) {
         isLocationSelected = false;
         currentLocationFee = 0;
+        currentLocationName = "";
         lockNotice.style.display = "block";
         addBtn.disabled = true;
         feeBadge.innerText = "Required";
@@ -458,14 +531,15 @@
       } else {
         isLocationSelected = true;
         currentLocationFee = parseFloat(selectedOption.getAttribute("data-fee")) || 0;
-        const locName = selectedOption.getAttribute("data-name");
+        currentLocationName = selectedOption.getAttribute("data-name");
 
         lockNotice.style.display = "none";
         addBtn.disabled = false;
         feeBadge.innerText = `+₦${currentLocationFee.toLocaleString()} / bag`;
-        summaryLocationText.innerText = `${locName} (+₦${currentLocationFee.toLocaleString()}/bag)`;
+        summaryLocationText.innerText = `${currentLocationName} (+₦${currentLocationFee.toLocaleString()}/bag)`;
       }
 
+      document.getElementById("unit-loc-fee-label").innerText = currentLocationFee.toLocaleString();
       refreshAllRows();
     }
 
@@ -522,7 +596,6 @@
     function removeProductRow(rowId) {
       const container = document.getElementById("order-rows-container");
       if (container.children.length <= 1) {
-        // Reset the single remaining row instead of deleting all rows
         document.getElementById(`product-select-${rowId}`).value = "";
         document.getElementById(`qty-input-${rowId}`).value = "";
         updateCalculations();
@@ -565,7 +638,11 @@
     }
 
     function updateCalculations() {
+      let totalBags = 0;
+      let feedOnlyTotal = 0;
+      let locationOnlyTotal = 0;
       let grandTotal = 0;
+
       const rows = document.querySelectorAll(".order-item-card");
 
       rows.forEach(row => {
@@ -585,22 +662,117 @@
         const basePrice = product ? product.basePrice : 0;
         const finalBagPrice = basePrice + currentLocationFee;
         const quantity = parseFloat(qtyEl.value) || 0;
-        const itemSubtotal = finalBagPrice * quantity;
+
+        const rowFeedCost = basePrice * quantity;
+        const rowLocationCost = currentLocationFee * quantity;
+        const itemSubtotal = rowFeedCost + rowLocationCost;
 
         unitPriceEl.innerText = `₦${finalBagPrice.toLocaleString()}`;
         subtotalEl.innerText = `₦${itemSubtotal.toLocaleString()}`;
+
+        totalBags += quantity;
+        feedOnlyTotal += rowFeedCost;
+        locationOnlyTotal += rowLocationCost;
         grandTotal += itemSubtotal;
       });
 
+      document.getElementById("total-bags-label").innerText = totalBags.toLocaleString();
+      document.getElementById("location-only-total").innerText = `₦${locationOnlyTotal.toLocaleString()}`;
+      document.getElementById("feed-only-total").innerText = `₦${feedOnlyTotal.toLocaleString()}`;
       document.getElementById("grand-total").innerText = `₦${grandTotal.toLocaleString()}`;
+    }
+
+    async function copyOrderSummary() {
+      if (!isLocationSelected) {
+        alert("Please select a delivery location first.");
+        return;
+      }
+
+      const rows = document.querySelectorAll(".order-item-card");
+      let selectedLines = [];
+      let totalBags = 0;
+      let feedOnlyTotal = 0;
+      let locationOnlyTotal = 0;
+      let grandTotal = 0;
+
+      rows.forEach(row => {
+        const rowId = row.getAttribute("data-row-id");
+        const selectEl = document.getElementById(`product-select-${rowId}`);
+        const qtyEl = document.getElementById(`qty-input-${rowId}`);
+        const quantity = parseFloat(qtyEl.value) || 0;
+
+        if (selectEl.value !== "" && quantity > 0) {
+          const product = productsList.find(p => String(p.id) === String(selectEl.value));
+          if (product) {
+            const finalBagPrice = product.basePrice + currentLocationFee;
+            const rowFeedCost = product.basePrice * quantity;
+            const rowLocCost = currentLocationFee * quantity;
+            const itemSubtotal = rowFeedCost + rowLocCost;
+
+            totalBags += quantity;
+            feedOnlyTotal += rowFeedCost;
+            locationOnlyTotal += rowLocCost;
+            grandTotal += itemSubtotal;
+
+            selectedLines.push(
+              `${selectedLines.length + 1}. ${product.name}\n` +
+              `   Qty: ${quantity} bag(s) | Base: ₦${product.basePrice.toLocaleString()}/bag | With Location: ₦${finalBagPrice.toLocaleString()}/bag\n` +
+              `   Subtotal: ₦${itemSubtotal.toLocaleString()}`
+            );
+          }
+        }
+      });
+
+      if (selectedLines.length === 0) {
+        alert("Please select at least one feed product and enter a quantity greater than 0.");
+        return;
+      }
+
+      const summaryText =
+        `*SK DUZA ENTERPRISES - ORDER SUMMARY*\n` +
+        `Delivery Location: ${currentLocationName} (+₦${currentLocationFee.toLocaleString()}/bag)\n` +
+        `----------------------------------------\n` +
+        `${selectedLines.join("\n\n")}\n` +
+        `----------------------------------------\n` +
+        `Total Quantity: ${totalBags.toLocaleString()} bag(s)\n` +
+        `1. Location Total (${totalBags} × ₦${currentLocationFee.toLocaleString()}): ₦${locationOnlyTotal.toLocaleString()}\n` +
+        `2. Feed Total (Base Price Only): ₦${feedOnlyTotal.toLocaleString()}\n` +
+        `3. GRAND TOTAL: ₦${grandTotal.toLocaleString()}`;
+
+      const copyBtn = document.getElementById("copy-order-btn");
+
+      try {
+        await navigator.clipboard.writeText(summaryText);
+        copyBtn.innerText = "Copied!";
+        copyBtn.classList.add("copied");
+        setTimeout(() => {
+          copyBtn.innerText = "Copy Order";
+          copyBtn.classList.remove("copied");
+        }, 2500);
+      } catch (err) {
+        // Fallback for older mobile browsers
+        const tempArea = document.createElement("textarea");
+        tempArea.value = summaryText;
+        document.body.appendChild(tempArea);
+        tempArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempArea);
+
+        copyBtn.innerText = "Copied!";
+        copyBtn.classList.add("copied");
+        setTimeout(() => {
+          copyBtn.innerText = "Copy Order";
+          copyBtn.classList.remove("copied");
+        }, 2500);
+      }
     }
 
     loadCatalog();
   </script>
   <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-</script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
 </body>
 </html>
