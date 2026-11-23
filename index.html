@@ -817,6 +817,7 @@
 
       const rows = document.querySelectorAll(".order-item-card");
       let lines = [];
+      let totalBags = 0;
       let feedOnlyTotal = 0;
       let locationOnlyTotal = 0;
       let grandTotal = 0;
@@ -834,14 +835,13 @@
             const rowLocCost = currentLocationFee * quantity;
             const itemSubtotal = rowFeedCost + rowLocCost;
 
+            totalBags += quantity;
             feedOnlyTotal += rowFeedCost;
             locationOnlyTotal += rowLocCost;
             grandTotal += itemSubtotal;
 
-            lines.push(
-              `${product.name}: qty: ${quantity}\n` +
-              `price: ${itemSubtotal.toLocaleString()}`
-            );
+            const bagWord = quantity === 1 ? "bag" : "bags";
+            lines.push(`${lines.length + 1}. ${product.name} — ${quantity} ${bagWord}: N${itemSubtotal.toLocaleString()}`);
           }
         }
       });
@@ -851,16 +851,15 @@
         return;
       }
 
-      const headerSection =
-        `*SK DUZA ENTERPRISES - ORDER SUMMARY*\n` +
-        `Delivery Location: ${currentLocationName} (+N${currentLocationFee.toLocaleString()}/bag)`;
+      const summaryText =
+        `*ORDER*\n` +
+        `Location: ${currentLocationName} (+N${currentLocationFee.toLocaleString()}/bag)\n\n` +
+        `${lines.join("\n")}\n\n` +
+        `Total Bags: ${totalBags.toLocaleString()}\n` +
+        `Location Fee: N${locationOnlyTotal.toLocaleString()}\n` +
+        `Feed Total: N${feedOnlyTotal.toLocaleString()}\n` +
+        `*GRAND TOTAL: N${grandTotal.toLocaleString()}*`;
 
-      const totalsSection =
-        `location total: N${locationOnlyTotal.toLocaleString()}\n` +
-        `feed total: N${feedOnlyTotal.toLocaleString()}\n` +
-        `grand total: N${grandTotal.toLocaleString()}`;
-
-      const summaryText = `${headerSection}\n\n${lines.join("\n\n")}\n\n${totalsSection}`;
       const copyBtn = document.getElementById("copy-order-btn");
 
       try {
