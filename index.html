@@ -428,6 +428,7 @@
       <label for="location-select">Select Destination Location</label>
       <select id="location-select" onchange="handleLocationChange()">
         <option value="">-- Choose a Location First --</option>
+        <option value="self-pick" data-fee="0" data-name="Self-pick">Self-pick (₦0 / bag)</option>
         <option value="jos" data-fee="495" data-name="Jos, Plateau State">Jos, Plateau State (+₦495 / bag)</option>
         <option value="lafia" data-fee="495" data-name="Lafia, Nasarawa State">Lafia, Nasarawa State (+₦495 / bag)</option>
         <option value="bauchi" data-fee="565" data-name="Bauchi">Bauchi (+₦565 / bag)</option>
@@ -750,7 +751,6 @@
           copyBtn.classList.remove("copied");
         }, 2500);
       } catch (err) {
-        // Fallback for older mobile browsers
         const tempArea = document.createElement("textarea");
         tempArea.value = summaryText;
         document.body.appendChild(tempArea);
