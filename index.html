@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081986.png">
+  <link rel="apple-touch-icon" href="./logo.jpg">
   <meta name="theme-color" content="#047857">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,6 +36,87 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    /* Blocking Startup Disclaimer Modal */
+    .disclaimer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 2000;
+    }
+
+    .disclaimer-backdrop.hidden {
+      display: none;
+    }
+
+    .disclaimer-modal {
+      background: #ffffff;
+      border-radius: 18px;
+      max-width: 440px;
+      width: 100%;
+      padding: 22px 20px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .modal-logo {
+      max-height: 68px;
+      max-width: 200px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      margin: 0 auto 12px auto;
+      display: block;
+    }
+
+    .disclaimer-title {
+      margin: 0 0 10px 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .disclaimer-text {
+      margin: 0 0 18px 0;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: #334155;
+      text-align: left;
+      background: #f8fafc;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .disclaimer-close-btn {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      transition: background 0.2s ease;
+    }
+
+    .disclaimer-close-btn:hover {
+      background: #065f46;
+    }
+
     header {
       text-align: center;
       padding: 16px 12px;
@@ -45,6 +126,26 @@
       margin: 0 auto 20px auto;
       max-width: 720px;
       box-shadow: var(--shadow-lg);
+    }
+
+    .header-logo-box {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 6px 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .header-logo {
+      max-height: 44px;
+      max-width: 170px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
     }
 
     .brand-badge {
@@ -405,12 +506,31 @@
     }
   </style>
 </head>
-<body>
+<body class="modal-open">
+
+  <!-- Mandatory Startup Disclaimer Pop-Up -->
+  <div id="disclaimer-modal" class="disclaimer-backdrop" role="dialog" aria-modal="true" aria-labelledby="disclaimer-heading">
+    <div class="disclaimer-modal">
+      <img src="./logo.jpg" alt="S.K Duza Enterprise Logo" class="modal-logo">
+      <h2 id="disclaimer-heading" class="disclaimer-title">Disclaimer</h2>
+      <p class="disclaimer-text">
+        This is an independent application and is not officially affiliated with Olam. Prices displayed on this app may differ from Olam’s actual prices, as Olam reserves the right to review or adjust its prices at any time without prior notice. Please confirm current prices with Olam before placing your orders.
+      </p>
+      <button type="button" id="close-disclaimer-btn" class="disclaimer-close-btn" onclick="closeDisclaimerModal()">
+        I Understand &amp; Continue
+      </button>
+    </div>
+  </div>
 
   <header>
-    <div class="brand-badge">
-      <span class="status-dot"></span>
-      Live Sheet Sync
+    <div class="header-logo-box">
+      <img src="./logo.jpg" alt="S.K Duza Enterprise Logo" class="header-logo">
+    </div>
+    <div>
+      <div class="brand-badge">
+        <span class="status-dot"></span>
+        Live Sheet Sync
+      </div>
     </div>
     <h1>SK DUZA ENTERPRISES</h1>
     <div class="sub-title">Feed Catalog & Live Order Calculator</div>
@@ -482,6 +602,12 @@
     let currentLocationName = "";
     let isLocationSelected = false;
     let rowCounter = 0;
+
+    function closeDisclaimerModal() {
+      const modal = document.getElementById("disclaimer-modal");
+      modal.classList.add("hidden");
+      document.body.classList.remove("modal-open");
+    }
 
     async function loadCatalog() {
       try {
