@@ -810,6 +810,11 @@
     }
 
     async function copyOrderSummary() {
+      if (!isLocationSelected) {
+        alert("Please select a delivery location first.");
+        return;
+      }
+
       const rows = document.querySelectorAll(".order-item-card");
       let lines = [];
       let feedOnlyTotal = 0;
@@ -846,12 +851,16 @@
         return;
       }
 
+      const headerSection =
+        `*SK DUZA ENTERPRISES - ORDER SUMMARY*\n` +
+        `Delivery Location: ${currentLocationName} (+N${currentLocationFee.toLocaleString()}/bag)`;
+
       const totalsSection =
         `location total: N${locationOnlyTotal.toLocaleString()}\n` +
         `feed total: N${feedOnlyTotal.toLocaleString()}\n` +
         `grand total: N${grandTotal.toLocaleString()}`;
 
-      const summaryText = `${lines.join("\n\n")}\n\n${totalsSection}`;
+      const summaryText = `${headerSection}\n\n${lines.join("\n\n")}\n\n${totalsSection}`;
       const copyBtn = document.getElementById("copy-order-btn");
 
       try {
