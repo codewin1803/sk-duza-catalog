@@ -185,6 +185,32 @@
       font-weight: 400;
     }
 
+    .install-app-btn {
+      display: none;
+      margin: 10px auto 0 auto;
+      background: #ffffff;
+      color: #047857;
+      border: none;
+      border-radius: 999px;
+      padding: 7px 16px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.15s ease, background 0.2s ease;
+    }
+
+    .install-app-btn:hover {
+      background: #ecfdf5;
+      transform: translateY(-1px);
+    }
+
+    .install-app-btn.visible {
+      display: inline-flex;
+    }
+
     #loading {
       text-align: center;
       padding: 40px 20px;
@@ -534,6 +560,9 @@
     </div>
     <h1>SK DUZA ENTERPRISES</h1>
     <div class="sub-title">Feed Catalog & Live Order Calculator</div>
+    <button type="button" id="install-app-btn" class="install-app-btn" onclick="triggerInstallPrompt()">
+      📲 Install App
+    </button>
   </header>
 
   <div id="loading">Syncing Latest Feed Prices...</div>
@@ -602,6 +631,34 @@
     let currentLocationName = "";
     let isLocationSelected = false;
     let rowCounter = 0;
+    let deferredInstallPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const installBtn = document.getElementById('install-app-btn');
+      if (installBtn) {
+        installBtn.classList.add('visible');
+      }
+    });
+
+    async function triggerInstallPrompt() {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === 'accepted') {
+        document.getElementById('install-app-btn').classList.remove('visible');
+      }
+      deferredInstallPrompt = null;
+    }
+
+    window.addEventListener('appinstalled', () => {
+      const installBtn = document.getElementById('install-app-btn');
+      if (installBtn) {
+        installBtn.classList.remove('visible');
+      }
+      deferredInstallPrompt = null;
+    });
 
     function closeDisclaimerModal() {
       const modal = document.getElementById("disclaimer-modal");
