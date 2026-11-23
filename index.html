@@ -39,7 +39,8 @@
       background: linear-gradient(135deg, #065f46 0%, #047857 100%);
       border-radius: 16px;
       color: #ffffff;
-      margin-bottom: 20px;
+      margin: 0 auto 20px auto;
+      max-width: 720px;
       box-shadow: var(--shadow-lg);
     }
 
@@ -88,66 +89,43 @@
       color: var(--text-muted);
     }
 
-    .feed-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 14px;
-      max-width: 850px;
-      margin: 0 auto 100px auto;
+    .main-container {
+      max-width: 720px;
+      margin: 0 auto 110px auto;
+      display: none;
     }
 
-    .feed-card {
+    .step-card {
       background: var(--card-bg);
       border-radius: 14px;
       padding: 16px;
       box-shadow: var(--shadow-sm);
       border: 1px solid var(--border);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      margin-bottom: 16px;
     }
 
-    .feed-card:focus-within, .feed-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--primary-light);
-    }
-
-    .feed-header {
+    .step-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       margin-bottom: 10px;
-      gap: 8px;
     }
 
-    .feed-title {
-      font-size: 1rem;
-      font-weight: 700;
-      margin: 0;
-      color: var(--text-dark);
-      line-height: 1.3;
-    }
-
-    .price-badge {
-      background-color: var(--primary-accent);
+    .step-badge {
+      background: var(--primary-accent);
       color: var(--primary);
-      padding: 4px 8px;
-      border-radius: 8px;
+      font-size: 0.72rem;
       font-weight: 800;
-      font-size: 0.95rem;
-      white-space: nowrap;
+      padding: 3px 9px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
     }
 
-    .updated-date {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-
-    .calc-section {
-      background-color: #f8fafc;
-      border-radius: 10px;
-      padding: 10px;
-      border: 1px solid #f1f5f9;
+    .location-surcharge-tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--primary);
     }
 
     label {
@@ -160,10 +138,10 @@
       letter-spacing: 0.4px;
     }
 
-    input[type="number"] {
+    select, input[type="number"] {
       width: 100%;
-      padding: 10px 12px;
-      font-size: 1rem;
+      padding: 11px 12px;
+      font-size: 0.98rem;
       font-weight: 600;
       border: 1.5px solid #cbd5e1;
       border-radius: 8px;
@@ -173,27 +151,145 @@
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    input[type="number"]:focus {
+    select:focus, input[type="number"]:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.15);
     }
 
-    .total-box {
-      margin-top: 10px;
-      font-size: 0.85rem;
+    select:disabled, input:disabled {
+      background-color: #f1f5f9;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .locked-notice {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.82rem;
       font-weight: 600;
-      color: var(--text-muted);
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .order-item-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .order-item-card:focus-within, .order-item-card:hover {
+      border-color: var(--primary-light);
+      box-shadow: var(--shadow-md);
+    }
+
+    .item-top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px dashed #e2e8f0;
-      padding-top: 8px;
+      margin-bottom: 10px;
     }
 
-    .total-amount {
-      color: var(--accent-red);
-      font-size: 1rem;
+    .item-number {
+      font-size: 0.8rem;
       font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .remove-btn {
+      background: #fee2e2;
+      color: var(--accent-red);
+      border: none;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .remove-btn:hover {
+      background: #fecaca;
+    }
+
+    .item-controls {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .item-controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .price-breakdown {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 10px 12px;
+      border: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .unit-price-info {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .unit-price-info strong {
+      color: var(--primary);
+      font-size: 0.92rem;
+    }
+
+    .subtotal-info {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .subtotal-amount {
+      color: var(--accent-red);
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-left: 4px;
+    }
+
+    .add-product-btn {
+      width: 100%;
+      padding: 13px 16px;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .add-product-btn:hover:not(:disabled) {
+      background: #065f46;
+    }
+
+    .add-product-btn:disabled {
+      background: #cbd5e1;
+      color: #64748b;
+      cursor: not-allowed;
+      box-shadow: none;
     }
 
     /* Floating Bottom Dock for Grand Total */
@@ -203,7 +299,7 @@
       left: 50%;
       transform: translateX(-50%);
       width: calc(100% - 24px);
-      max-width: 820px;
+      max-width: 720px;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #ffffff;
       padding: 12px 18px;
@@ -224,6 +320,15 @@
       letter-spacing: 0.5px;
     }
 
+    .grand-total-sub {
+      display: block;
+      font-size: 0.72rem;
+      color: #64748b;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
     .grand-total-amount {
       color: #34d399;
       font-size: 1.25rem;
@@ -234,8 +339,6 @@
       body { padding: 6px; }
       header { padding: 12px 8px; border-radius: 12px; }
       h1 { font-size: 1.1rem; }
-      .feed-card { padding: 12px; border-radius: 10px; }
-      .price-badge { font-size: 0.85rem; }
       .grand-total-bar {
         bottom: 6px;
         padding: 8px 12px;
@@ -258,81 +361,233 @@
   </header>
 
   <div id="loading">Syncing Latest Feed Prices...</div>
-  <div id="feed-container" class="feed-grid"></div>
+
+  <div id="main-app" class="main-container">
+    <!-- STEP 1: LOCATION SELECTOR -->
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-badge">Step 1: Delivery Location</span>
+        <span class="location-surcharge-tag" id="location-fee-badge">Required</span>
+      </div>
+      <label for="location-select">Select Destination Location</label>
+      <select id="location-select" onchange="handleLocationChange()">
+        <option value="">-- Choose a Location First --</option>
+        <option value="jos" data-fee="495" data-name="Jos, Plateau State">Jos, Plateau State (+₦495 / bag)</option>
+        <option value="lafia" data-fee="495" data-name="Lafia, Nasarawa State">Lafia, Nasarawa State (+₦495 / bag)</option>
+        <option value="bauchi" data-fee="565" data-name="Bauchi">Bauchi (+₦565 / bag)</option>
+      </select>
+    </div>
+
+    <!-- LOCK NOTICE BEFORE LOCATION IS CHOSEN -->
+    <div id="lock-notice" class="locked-notice">
+      Please select a delivery location above before selecting products.
+    </div>
+
+    <!-- STEP 2: DYNAMIC PRODUCT ROWS -->
+    <div id="order-rows-container"></div>
+
+    <button type="button" id="add-product-btn" class="add-product-btn" onclick="addProductRow()" disabled>
+      + Add Another Product
+    </button>
+  </div>
 
   <!-- Floating Grand Total Summary Bar -->
   <div class="grand-total-bar">
-    <span class="grand-total-label">Grand Total:</span>
+    <div>
+      <span class="grand-total-label">Grand Total</span>
+      <span class="grand-total-sub" id="summary-location-text">No location selected</span>
+    </div>
     <span class="grand-total-amount" id="grand-total">₦0</span>
   </div>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzx0OreTpR7nowiE15Kc1ilv5E7C4GdOaxti2mEgCx_ptCV1W5k-lBjV7e4sJ-DimwY/exec";
-    let catalogData = [];
+    let productsList = [];
+    let currentLocationFee = 0;
+    let isLocationSelected = false;
+    let rowCounter = 0;
 
     async function loadCatalog() {
       try {
         const response = await fetch(API_URL);
-        catalogData = await response.json();
-        
-        const container = document.getElementById("feed-container");
-        const loading = document.getElementById("loading");
-        
-        loading.style.display = "none";
-        container.innerHTML = "";
+        const rawData = await response.json();
 
-        catalogData.forEach((item, index) => {
-          // Flexible key grabbers to prevent "Unknown Feed" or ₦0 errors due to casing/spacing
+        productsList = rawData.map((item, idx) => {
           const keys = Object.keys(item);
-          const feedName = item[keys[0]] || "Unknown Feed";
-          
-          let rawPrice = item[keys[1]] !== undefined ? item[keys[1]] : 0;
-          const unitPrice = parseFloat(String(rawPrice).replace(/[^0-9.]/g, '')) || 0;
-          
+          const feedName = item[keys[0]] || `Feed Item ${idx + 1}`;
+          const rawPrice = item[keys[1]] !== undefined ? item[keys[1]] : 0;
+          const basePrice = parseFloat(String(rawPrice).replace(/[^0-9.]/g, '')) || 0;
           const lastUpdated = item[keys[2]] ? new Date(item[keys[2]]).toLocaleDateString() : "Recently";
 
-          const card = document.createElement("div");
-          card.className = "feed-card";
-          card.innerHTML = `
-            <div class="feed-header">
-              <h2 class="feed-title">${feedName}</h2>
-              <span class="price-badge">₦${unitPrice.toLocaleString()}</span>
-            </div>
-            <div class="updated-date">Updated: ${lastUpdated}</div>
-            <div class="calc-section">
-              <label for="qty-${index}">Quantity (Bags)</label>
-              <input type="number" id="qty-${index}" min="0" placeholder="0" data-price="${unitPrice}" oninput="updateCalculations()">
-              <div class="total-box">
-                <span>Subtotal:</span>
-                <span class="total-amount" id="total-${index}">₦0</span>
-              </div>
-            </div>
-          `;
-          container.appendChild(card);
+          return {
+            id: idx,
+            name: feedName,
+            basePrice: basePrice,
+            lastUpdated: lastUpdated
+          };
         });
+
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("main-app").style.display = "block";
+
+        // Create the first product row (locked until location is selected)
+        addProductRow();
       } catch (error) {
         document.getElementById("loading").innerText = "Unable to fetch live prices. Please check connection.";
         console.error("Error fetching data:", error);
       }
     }
 
+    function handleLocationChange() {
+      const locationSelect = document.getElementById("location-select");
+      const selectedOption = locationSelect.options[locationSelect.selectedIndex];
+      const lockNotice = document.getElementById("lock-notice");
+      const addBtn = document.getElementById("add-product-btn");
+      const feeBadge = document.getElementById("location-fee-badge");
+      const summaryLocationText = document.getElementById("summary-location-text");
+
+      if (!locationSelect.value) {
+        isLocationSelected = false;
+        currentLocationFee = 0;
+        lockNotice.style.display = "block";
+        addBtn.disabled = true;
+        feeBadge.innerText = "Required";
+        summaryLocationText.innerText = "No location selected";
+      } else {
+        isLocationSelected = true;
+        currentLocationFee = parseFloat(selectedOption.getAttribute("data-fee")) || 0;
+        const locName = selectedOption.getAttribute("data-name");
+
+        lockNotice.style.display = "none";
+        addBtn.disabled = false;
+        feeBadge.innerText = `+₦${currentLocationFee.toLocaleString()} / bag`;
+        summaryLocationText.innerText = `${locName} (+₦${currentLocationFee.toLocaleString()}/bag)`;
+      }
+
+      refreshAllRows();
+    }
+
+    function buildProductOptionsHTML(selectedProductId) {
+      let options = `<option value="">-- Select a Feed Product --</option>`;
+      productsList.forEach(prod => {
+        const finalBagPrice = prod.basePrice + currentLocationFee;
+        const selectedAttr = String(prod.id) === String(selectedProductId) ? "selected" : "";
+        options += `<option value="${prod.id}" ${selectedAttr}>${prod.name} — ₦${finalBagPrice.toLocaleString()}/bag</option>`;
+      });
+      return options;
+    }
+
+    function addProductRow() {
+      rowCounter++;
+      const rowId = rowCounter;
+      const container = document.getElementById("order-rows-container");
+
+      const rowDiv = document.createElement("div");
+      rowDiv.className = "order-item-card";
+      rowDiv.id = `order-row-${rowId}`;
+      rowDiv.setAttribute("data-row-id", rowId);
+
+      const disabledAttr = isLocationSelected ? "" : "disabled";
+
+      rowDiv.innerHTML = `
+        <div class="item-top-bar">
+          <span class="item-number">Product Item</span>
+          <button type="button" class="remove-btn" onclick="removeProductRow(${rowId})">Remove</button>
+        </div>
+        <div class="item-controls">
+          <div>
+            <label for="product-select-${rowId}">Select Feed</label>
+            <select id="product-select-${rowId}" onchange="updateCalculations()" ${disabledAttr}>
+              ${buildProductOptionsHTML("")}
+            </select>
+          </div>
+          <div>
+            <label for="qty-input-${rowId}">Quantity (Bags)</label>
+            <input type="number" id="qty-input-${rowId}" min="0" placeholder="0" oninput="updateCalculations()" ${disabledAttr}>
+          </div>
+        </div>
+        <div class="price-breakdown">
+          <span class="unit-price-info">Final Bag Price: <strong id="unit-price-${rowId}">₦0</strong></span>
+          <span class="subtotal-info">Subtotal: <span class="subtotal-amount" id="subtotal-${rowId}">₦0</span></span>
+        </div>
+      `;
+
+      container.appendChild(rowDiv);
+      updateRowNumbers();
+      updateCalculations();
+    }
+
+    function removeProductRow(rowId) {
+      const container = document.getElementById("order-rows-container");
+      if (container.children.length <= 1) {
+        // Reset the single remaining row instead of deleting all rows
+        document.getElementById(`product-select-${rowId}`).value = "";
+        document.getElementById(`qty-input-${rowId}`).value = "";
+        updateCalculations();
+        return;
+      }
+
+      const rowEl = document.getElementById(`order-row-${rowId}`);
+      if (rowEl) {
+        rowEl.remove();
+      }
+      updateRowNumbers();
+      updateCalculations();
+    }
+
+    function updateRowNumbers() {
+      const rows = document.querySelectorAll(".order-item-card");
+      rows.forEach((row, idx) => {
+        const label = row.querySelector(".item-number");
+        if (label) {
+          label.innerText = `Product #${idx + 1}`;
+        }
+      });
+    }
+
+    function refreshAllRows() {
+      const rows = document.querySelectorAll(".order-item-card");
+      rows.forEach(row => {
+        const rowId = row.getAttribute("data-row-id");
+        const selectEl = document.getElementById(`product-select-${rowId}`);
+        const qtyEl = document.getElementById(`qty-input-${rowId}`);
+
+        const currentSelection = selectEl.value;
+        selectEl.innerHTML = buildProductOptionsHTML(currentSelection);
+
+        selectEl.disabled = !isLocationSelected;
+        qtyEl.disabled = !isLocationSelected;
+      });
+
+      updateCalculations();
+    }
+
     function updateCalculations() {
       let grandTotal = 0;
+      const rows = document.querySelectorAll(".order-item-card");
 
-      catalogData.forEach((item, index) => {
-        const qtyInput = document.getElementById(`qty-${index}`);
-        if (!qtyInput) return;
+      rows.forEach(row => {
+        const rowId = row.getAttribute("data-row-id");
+        const selectEl = document.getElementById(`product-select-${rowId}`);
+        const qtyEl = document.getElementById(`qty-input-${rowId}`);
+        const unitPriceEl = document.getElementById(`unit-price-${rowId}`);
+        const subtotalEl = document.getElementById(`subtotal-${rowId}`);
 
-        const unitPrice = parseFloat(qtyInput.getAttribute("data-price")) || 0;
-        const quantity = parseFloat(qtyInput.value) || 0;
-        
-        const itemTotal = quantity * unitPrice;
-        grandTotal += itemTotal;
-
-        const totalElement = document.getElementById(`total-${index}`);
-        if (totalElement) {
-          totalElement.innerText = `₦${itemTotal.toLocaleString()}`;
+        if (!isLocationSelected || selectEl.value === "") {
+          unitPriceEl.innerText = "₦0";
+          subtotalEl.innerText = "₦0";
+          return;
         }
+
+        const product = productsList.find(p => String(p.id) === String(selectEl.value));
+        const basePrice = product ? product.basePrice : 0;
+        const finalBagPrice = basePrice + currentLocationFee;
+        const quantity = parseFloat(qtyEl.value) || 0;
+        const itemSubtotal = finalBagPrice * quantity;
+
+        unitPriceEl.innerText = `₦${finalBagPrice.toLocaleString()}`;
+        subtotalEl.innerText = `₦${itemSubtotal.toLocaleString()}`;
+        grandTotal += itemSubtotal;
       });
 
       document.getElementById("grand-total").innerText = `₦${grandTotal.toLocaleString()}`;
