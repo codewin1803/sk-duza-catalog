@@ -736,14 +736,18 @@
     }
 
     function launchWhatsApp() {
-      const appLink = "https://whatsapp.com/dl/";
-      const webFallback = "https://api.whatsapp.com/send";
-      window.location.href = appLink;
-      setTimeout(() => {
-        if (!document.hidden) {
-          window.open(webFallback, "_blank", "noopener,noreferrer");
-        }
-      }, 1200);
+      const nativeAppUrl = "whatsapp://send";
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      window.location.href = nativeAppUrl;
+
+      if (!isMobile) {
+        setTimeout(() => {
+          if (!document.hidden && document.hasFocus()) {
+            window.open("https://web.whatsapp.com/", "_blank", "noopener,noreferrer");
+          }
+        }, 1500);
+      }
     }
 
     // Draggable Floating WhatsApp Button Logic
