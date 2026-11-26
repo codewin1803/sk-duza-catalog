@@ -231,46 +231,46 @@
       display: none;
     }
 
-    /* Big, High-Visibility Draggable Floating WhatsApp Button Below */
+    /* Big Round Draggable Floating WhatsApp Circle Button */
     .floating-whatsapp-btn {
       position: fixed;
-      bottom: 168px;
-      right: 16px;
+      bottom: 172px;
+      right: 18px;
+      width: 64px;
+      height: 64px;
+      padding: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 9px;
-      background: linear-gradient(135deg, #25d366 0%, #16a34a 100%);
+      background: linear-gradient(145deg, #25d366 0%, #128c7e 100%);
       color: #ffffff;
       border: 3px solid #ffffff;
-      border-radius: 999px;
-      padding: 13px 20px;
-      font-size: 0.96rem;
-      font-weight: 800;
-      letter-spacing: 0.2px;
+      border-radius: 50%;
       cursor: grab;
       user-select: none;
       -webkit-user-select: none;
       touch-action: none;
-      box-shadow: 0 10px 26px rgba(22, 163, 74, 0.45), 0 4px 10px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 10px 26px rgba(18, 140, 126, 0.5), 0 4px 10px rgba(0, 0, 0, 0.28);
       z-index: 1500;
       transition: box-shadow 0.2s ease, transform 0.15s ease;
     }
 
+    .floating-whatsapp-btn svg {
+      width: 34px;
+      height: 34px;
+      fill: #ffffff;
+      pointer-events: none;
+    }
+
     .floating-whatsapp-btn:hover {
-      box-shadow: 0 12px 30px rgba(22, 163, 74, 0.6), 0 6px 14px rgba(0, 0, 0, 0.3);
-      transform: scale(1.03);
+      box-shadow: 0 14px 32px rgba(18, 140, 126, 0.65), 0 6px 14px rgba(0, 0, 0, 0.32);
+      transform: scale(1.05);
     }
 
     .floating-whatsapp-btn.dragging {
       cursor: grabbing;
-      transform: scale(1.06);
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.38);
-    }
-
-    .wa-icon {
-      font-size: 1.25rem;
-      line-height: 1;
+      transform: scale(1.08);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
     }
 
     #loading {
@@ -583,10 +583,14 @@
       header { padding: 12px 8px; border-radius: 12px; }
       h1 { font-size: 1.1rem; }
       .floating-whatsapp-btn {
-        bottom: 162px;
+        bottom: 166px;
         right: 12px;
-        padding: 11px 16px;
-        font-size: 0.88rem;
+        width: 58px;
+        height: 58px;
+      }
+      .floating-whatsapp-btn svg {
+        width: 30px;
+        height: 30px;
       }
       .grand-total-bar {
         bottom: 6px;
@@ -683,10 +687,11 @@
     </button>
   </div>
 
-  <!-- Big Draggable Floating WhatsApp Button Below -->
-  <button type="button" id="floating-whatsapp-btn" class="floating-whatsapp-btn" aria-label="Open WhatsApp">
-    <span class="wa-icon">💬</span>
-    <span>WhatsApp</span>
+  <!-- Big Round Draggable Floating WhatsApp Button -->
+  <button type="button" id="floating-whatsapp-btn" class="floating-whatsapp-btn" title="Drag to move or tap to open WhatsApp" aria-label="Open WhatsApp">
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M16 3C8.82 3 3 8.82 3 16c0 2.3.6 4.54 1.74 6.52L3.25 28.2l5.84-1.53A12.93 12.93 0 0 0 16 29c7.18 0 13-5.82 13-13S23.18 3 16 3zm0 23.8c-2.02 0-4.01-.54-5.75-1.57l-.41-.24-3.46.91.92-3.37-.27-.43A10.75 10.75 0 0 1 5.2 16c0-5.96 4.85-10.8 10.8-10.8S26.8 10.04 26.8 16 21.96 26.8 16 26.8zm5.92-8.09c-.32-.16-1.92-.95-2.22-1.06-.3-.11-.52-.16-.74.16-.22.32-.85 1.06-1.04 1.28-.19.22-.38.24-.7.08-.32-.16-1.36-.5-2.6-1.6-.96-.86-1.61-1.92-1.8-2.24-.19-.32-.02-.49.14-.65.14-.14.32-.38.48-.57.16-.19.21-.32.32-.54.11-.22.05-.41-.03-.57-.08-.16-.74-1.79-1.02-2.45-.27-.65-.54-.56-.74-.57h-.63c-.22 0-.57.08-.87.41-.3.32-1.14 1.11-1.14 2.71 0 1.6 1.17 3.15 1.33 3.36.16.22 2.3 3.51 5.57 4.92.78.34 1.39.54 1.86.69.78.25 1.49.21 2.05.13.63-.09 1.92-.78 2.19-1.54.27-.75.27-1.4.19-1.54-.08-.14-.3-.22-.62-.38z"/>
+    </svg>
   </button>
 
   <!-- Floating Summary Bar with 3 Totals & Copy Button -->
@@ -774,7 +779,6 @@
         initialLeft = rect.left;
         initialTop = rect.top;
 
-        // Switch from right/bottom anchors to exact left/top coordinates for smooth dragging
         btn.style.left = `${initialLeft}px`;
         btn.style.top = `${initialTop}px`;
         btn.style.right = "auto";
