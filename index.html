@@ -18,6 +18,8 @@
       --text-muted: #64748b;
       --border: #e2e8f0;
       --accent-red: #dc2626;
+      --whatsapp: #25d366;
+      --whatsapp-dark: #16a34a;
       --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
       --shadow-md: 0 4px 14px -2px rgba(0,0,0,0.08);
       --shadow-lg: 0 10px 25px -5px rgba(4, 120, 87, 0.12);
@@ -193,13 +195,21 @@
       font-weight: 400;
     }
 
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
     /* Solid Always-Visible Install Button on Dashboard */
     .install-app-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 7px;
-      margin: 12px auto 0 auto;
       background: #ffffff;
       color: #047857;
       border: 2px solid #a7f3d0;
@@ -221,6 +231,48 @@
       display: none;
     }
 
+    /* Big, High-Visibility Draggable Floating WhatsApp Button Below */
+    .floating-whatsapp-btn {
+      position: fixed;
+      bottom: 168px;
+      right: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      background: linear-gradient(135deg, #25d366 0%, #16a34a 100%);
+      color: #ffffff;
+      border: 3px solid #ffffff;
+      border-radius: 999px;
+      padding: 13px 20px;
+      font-size: 0.96rem;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      box-shadow: 0 10px 26px rgba(22, 163, 74, 0.45), 0 4px 10px rgba(0, 0, 0, 0.25);
+      z-index: 1500;
+      transition: box-shadow 0.2s ease, transform 0.15s ease;
+    }
+
+    .floating-whatsapp-btn:hover {
+      box-shadow: 0 12px 30px rgba(22, 163, 74, 0.6), 0 6px 14px rgba(0, 0, 0, 0.3);
+      transform: scale(1.03);
+    }
+
+    .floating-whatsapp-btn.dragging {
+      cursor: grabbing;
+      transform: scale(1.06);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.38);
+    }
+
+    .wa-icon {
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
     #loading {
       text-align: center;
       padding: 40px 20px;
@@ -231,7 +283,7 @@
 
     .main-container {
       max-width: 720px;
-      margin: 0 auto 215px auto;
+      margin: 0 auto 235px auto;
       display: none;
     }
 
@@ -530,6 +582,12 @@
       body { padding: 6px; }
       header { padding: 12px 8px; border-radius: 12px; }
       h1 { font-size: 1.1rem; }
+      .floating-whatsapp-btn {
+        bottom: 162px;
+        right: 12px;
+        padding: 11px 16px;
+        font-size: 0.88rem;
+      }
       .grand-total-bar {
         bottom: 6px;
         padding: 10px 12px;
@@ -586,7 +644,7 @@
     </div>
     <h1>SK DUZA ENTERPRISES</h1>
     <div class="sub-title">Feed Catalog & Live Order Calculator</div>
-    <div>
+    <div class="header-actions">
       <button type="button" id="install-app-btn" class="install-app-btn" onclick="triggerInstallPrompt()">
         📲 Install App
       </button>
@@ -624,6 +682,12 @@
       + Add Another Product
     </button>
   </div>
+
+  <!-- Big Draggable Floating WhatsApp Button Below -->
+  <button type="button" id="floating-whatsapp-btn" class="floating-whatsapp-btn" aria-label="Open WhatsApp">
+    <span class="wa-icon">💬</span>
+    <span>WhatsApp</span>
+  </button>
 
   <!-- Floating Summary Bar with 3 Totals & Copy Button -->
   <div class="grand-total-bar">
@@ -665,6 +729,105 @@
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
       document.getElementById('install-app-btn').classList.add('hidden-standalone');
     }
+
+    function launchWhatsApp() {
+      const appLink = "https://whatsapp.com/dl/";
+      const webFallback = "https://api.whatsapp.com/send";
+      window.location.href = appLink;
+      setTimeout(() => {
+        if (!document.hidden) {
+          window.open(webFallback, "_blank", "noopener,noreferrer");
+        }
+      }, 1200);
+    }
+
+    // Draggable Floating WhatsApp Button Logic
+    (function initDraggableWhatsApp() {
+      const btn = document.getElementById("floating-whatsapp-btn");
+      if (!btn) return;
+
+      let isPointerDown = false;
+      let hasMoved = false;
+      let startX = 0;
+      let startY = 0;
+      let initialLeft = 0;
+      let initialTop = 0;
+
+      function clampPosition(left, top) {
+        const margin = 8;
+        const rect = btn.getBoundingClientRect();
+        const maxLeft = Math.max(margin, window.innerWidth - rect.width - margin);
+        const maxTop = Math.max(margin, window.innerHeight - rect.height - margin);
+        return {
+          left: Math.min(Math.max(margin, left), maxLeft),
+          top: Math.min(Math.max(margin, top), maxTop)
+        };
+      }
+
+      btn.addEventListener("pointerdown", (e) => {
+        isPointerDown = true;
+        hasMoved = false;
+        startX = e.clientX;
+        startY = e.clientY;
+
+        const rect = btn.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        // Switch from right/bottom anchors to exact left/top coordinates for smooth dragging
+        btn.style.left = `${initialLeft}px`;
+        btn.style.top = `${initialTop}px`;
+        btn.style.right = "auto";
+        btn.style.bottom = "auto";
+
+        btn.setPointerCapture(e.pointerId);
+        btn.classList.add("dragging");
+      });
+
+      btn.addEventListener("pointermove", (e) => {
+        if (!isPointerDown) return;
+
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+          hasMoved = true;
+        }
+
+        if (hasMoved) {
+          const clamped = clampPosition(initialLeft + dx, initialTop + dy);
+          btn.style.left = `${clamped.left}px`;
+          btn.style.top = `${clamped.top}px`;
+        }
+      });
+
+      function onPointerEnd(e) {
+        if (!isPointerDown) return;
+        isPointerDown = false;
+        btn.classList.remove("dragging");
+
+        if (btn.hasPointerCapture(e.pointerId)) {
+          btn.releasePointerCapture(e.pointerId);
+        }
+
+        if (!hasMoved) {
+          launchWhatsApp();
+        }
+      }
+
+      btn.addEventListener("pointerup", onPointerEnd);
+      btn.addEventListener("pointercancel", onPointerEnd);
+
+      window.addEventListener("resize", () => {
+        if (btn.style.left && btn.style.top) {
+          const currentLeft = parseFloat(btn.style.left) || 0;
+          const currentTop = parseFloat(btn.style.top) || 0;
+          const clamped = clampPosition(currentLeft, currentTop);
+          btn.style.left = `${clamped.left}px`;
+          btn.style.top = `${clamped.top}px`;
+        }
+      });
+    })();
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
